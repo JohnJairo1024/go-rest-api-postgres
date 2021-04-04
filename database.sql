@@ -1,0 +1,8 @@
+CREATE DATABASE documentos;
+
+CREATE TABLE document (
+  id SERIAL PRIMARY KEY,
+  placa VARCHAR NOT NULL,
+  request VARCHAR NOT NULL,
+  response VARCHAR NOT NULL
+);
