@@ -16,6 +16,48 @@ type Data struct {
 	Errors  []string          `json:"errors"`
 }
 
+func GetDocuments(w http.ResponseWriter, req *http.Request) {
+	var document = models.GetAll()
+
+	var data = Data{true, document, make([]string, 0)}
+	json, _ := json.Marshal(data)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
+}
+
+func GetDocument(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	placa := vars["placa"]
+
+	var data Data
+
+	var documento models.Document
+	var success bool
+	documento, success = models.Get(placa)
+	if success != true {
+		data.Success = false
+		data.Errors = append(data.Errors, "No se encuentra información para la placa: ", placa)
+
+		json, _ := json.Marshal(data)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(json)
+		return
+	}
+
+	data.Success = true
+	data.Data = append(data.Data, documento)
+
+	json, _ := json.Marshal(data)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
+}
+
 func CreateDocument(w http.ResponseWriter, req *http.Request) {
 	body, success := helpers.DecodeBody(req)
 	if success != true {
@@ -71,17 +113,6 @@ func CreateDocument(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func GetDocuments(w http.ResponseWriter, req *http.Request) {
-	var document []models.Document = models.GetAll()
-
-	var data = Data{true, document, make([]string, 0)}
-	json, _ := json.Marshal(data)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(json)
-}
-
 func UpdateDocument(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	todo_id := vars["id"]
@@ -120,37 +151,6 @@ func UpdateDocument(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(json)
 	return
-}
-
-func GetDocument(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	id := vars["id"]
-
-	var data Data
-
-	var documento models.Document
-	var success bool
-	documento, success = models.Get(id)
-	if success != true {
-		data.Success = false
-		data.Errors = append(data.Errors, "not found")
-
-		json, _ := json.Marshal(data)
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(json)
-		return
-	}
-
-	data.Success = true
-	data.Data = append(data.Data, documento)
-
-	json, _ := json.Marshal(data)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(json)
 }
 
 func DeleteDocument(w http.ResponseWriter, req *http.Request) {

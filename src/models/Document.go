@@ -30,9 +30,9 @@ func Insert(placa string, request string, response string) (Document, bool) {
 	return Document{todo_id, placa, request, response}, true
 }
 
-func Get(id string) (Document, bool) {
+func Get(placaVehiculo string) (Document, bool) {
 	db := database.GetConnection()
-	row := db.QueryRow("SELECT * FROM document WHERE id = $1", id)
+	row := db.QueryRow("SELECT * FROM document WHERE placa = $1", placaVehiculo)
 
 	var ID int
 	var placa string
